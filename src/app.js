@@ -138,7 +138,8 @@ const App = () => {
   }, [playType]); // eslint-disable-line
 
   useEffect(() => {
-    ac.audioWorklet
+    try {
+      ac.audioWorklet
       .addModule('pulse-oscillator.js')
       .then(() => {
         oscWorklet = new AudioWorkletNode(ac, 'pulse-oscillator');
@@ -153,6 +154,10 @@ const App = () => {
         console.error(err);
         setWorkletError(err.message);
       });
+    } catch (err) {
+      console.error(err);
+      setWorkletError(err.message);
+    }
   }, []);
 
   if (workletError) {
