@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.css": "/web-audio-api-v2-issue-7/static/css/main.585816ac.chunk.css",
-    "main.js": "/web-audio-api-v2-issue-7/static/js/main.9981ef9b.chunk.js",
-    "main.js.map": "/web-audio-api-v2-issue-7/static/js/main.9981ef9b.chunk.js.map",
-    "runtime-main.js": "/web-audio-api-v2-issue-7/static/js/runtime-main.60da718f.js",
-    "runtime-main.js.map": "/web-audio-api-v2-issue-7/static/js/runtime-main.60da718f.js.map",
-    "static/js/2.1e7c8ae9.chunk.js": "/web-audio-api-v2-issue-7/static/js/2.1e7c8ae9.chunk.js",
-    "static/js/2.1e7c8ae9.chunk.js.map": "/web-audio-api-v2-issue-7/static/js/2.1e7c8ae9.chunk.js.map",
-    "index.html": "/web-audio-api-v2-issue-7/index.html",
-    "precache-manifest.6acc8ce913b54f6a0f48d46e6c93e75b.js": "/web-audio-api-v2-issue-7/precache-manifest.6acc8ce913b54f6a0f48d46e6c93e75b.js",
-    "service-worker.js": "/web-audio-api-v2-issue-7/service-worker.js",
-    "static/css/main.585816ac.chunk.css.map": "/web-audio-api-v2-issue-7/static/css/main.585816ac.chunk.css.map",
-    "static/js/2.1e7c8ae9.chunk.js.LICENSE.txt": "/web-audio-api-v2-issue-7/static/js/2.1e7c8ae9.chunk.js.LICENSE.txt"
+    "main.css": "./static/css/main.585816ac.chunk.css",
+    "main.js": "./static/js/main.ee718a65.chunk.js",
+    "main.js.map": "./static/js/main.ee718a65.chunk.js.map",
+    "runtime-main.js": "./static/js/runtime-main.7f0205fe.js",
+    "runtime-main.js.map": "./static/js/runtime-main.7f0205fe.js.map",
+    "static/js/2.24fe1881.chunk.js": "./static/js/2.24fe1881.chunk.js",
+    "static/js/2.24fe1881.chunk.js.map": "./static/js/2.24fe1881.chunk.js.map",
+    "index.html": "./index.html",
+    "precache-manifest.0c78e11aeae8ea8cf8e69af876df1465.js": "./precache-manifest.0c78e11aeae8ea8cf8e69af876df1465.js",
+    "service-worker.js": "./service-worker.js",
+    "static/css/main.585816ac.chunk.css.map": "./static/css/main.585816ac.chunk.css.map",
+    "static/js/2.24fe1881.chunk.js.LICENSE.txt": "./static/js/2.24fe1881.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.60da718f.js",
-    "static/js/2.1e7c8ae9.chunk.js",
+    "static/js/runtime-main.7f0205fe.js",
+    "static/js/2.24fe1881.chunk.js",
     "static/css/main.585816ac.chunk.css",
-    "static/js/main.9981ef9b.chunk.js"
+    "static/js/main.ee718a65.chunk.js"
   ]
 }
