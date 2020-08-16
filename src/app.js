@@ -234,7 +234,7 @@ const App = () => {
         </Col>
         <Col className={styles.Col}>
           <h2>Visualizations</h2>
-          <h3>worker</h3>
+          <h3>worklet</h3>
           <Row>
             <Col>
               <AnalyserChart analyser={analyserWorklet} chartType="waveform" />
