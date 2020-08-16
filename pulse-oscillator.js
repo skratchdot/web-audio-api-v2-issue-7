@@ -1,7 +1,5 @@
 /* globals currentFrame, currentTime, sampleRate, registerProcessor */
 
-dfdfd;
-
 // a few default values
 const DEFAULT_FREQUENCY = 440;
 const DEFAULT_DETUNE = 0;
