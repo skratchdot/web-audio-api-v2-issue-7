@@ -138,10 +138,9 @@ const App = () => {
   }, [playType]); // eslint-disable-line
 
   useEffect(() => {
-    try {
-      ac.audioWorklet
-      .addModule('pulse-oscillator.js')
-      .then(() => {
+    (async () => {
+      try {
+        await ac.audioWorklet.addModule('pulse-oscillator.js');
         oscWorklet = new AudioWorkletNode(ac, 'pulse-oscillator');
         analyserWorklet = new AnalyserNode(ac, { smoothingTimeConstant: 0 });
         gainWorklet = new GainNode(ac, { gain: 0 });
@@ -149,15 +148,11 @@ const App = () => {
         oscWorklet.connect(gainWorklet);
         gainWorklet.connect(gainMain);
         setWorkletLoaded(true);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error(err);
         setWorkletError(err.message);
-      });
-    } catch (err) {
-      console.error(err);
-      setWorkletError(err.message);
-    }
+      }
+    })();
   }, []);
 
   if (workletError) {
