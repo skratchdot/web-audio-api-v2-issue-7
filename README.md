@@ -80,3 +80,8 @@ cosnt osc = new AudioWorkletNode(context, 'pulse-oscillator');
 - https://www.music.mcgill.ca/~gary/307/week5/bandlimited.html#SECTION00027000000000000000
 - https://www.musicdsp.org/en/latest/Synthesis/112-waveform-generator-using-minbleps.html
 
+#### ToneJS
+
+- evaluate how ToneJS is doing it:
+  - https://github.com/Tonejs/Tone.js/blob/master/Tone/source/oscillator/PWMOscillator.ts
+  - https://github.com/Tonejs/Tone.js/blob/master/Tone/source/oscillator/PulseOscillator.ts

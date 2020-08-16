@@ -1,0 +1,12 @@
+.pre {
+    width: 50%;
+  padding: 25px;
+  margin: 10px auto;
+  background: #efefef;
+  border: 1px solid #777;
+  border-radius: 5px;
+}
+.code {
+  padding: 10px;
+  color: #333;
+}
