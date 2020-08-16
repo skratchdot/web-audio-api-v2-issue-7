@@ -137,7 +137,7 @@ const Demo1 = () => {
       oscWorklet.parameters
         .get('pulseWidth')
         .setValueAtTime(pulseWidth, ac.currentTime);
-  }, [pulseWidth]); // eslint-disable-line
+  }, [pulseWidth]);
 
   useEffect(() => {
     gainMain.gain.value = gain;
@@ -163,7 +163,7 @@ const Demo1 = () => {
       gainSquare.gain.setValueAtTime(1, ac.currentTime);
       gainWorklet && gainWorklet.gain.setValueAtTime(0, ac.currentTime);
     }
-  }, [playType]); // eslint-disable-line
+  }, [playType]);
 
   // setup worklet onload, and destroy context on unload
   useEffect(() => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Col from './col';
 import GithubCorner from 'react-github-corner';
 import Row from './row';
@@ -25,7 +25,7 @@ const App = () => {
         </Col>
         <Col style={{ alignSelf: 'center' }}>
           {['demo1', 'demo2'].map((d) => (
-            <button disabled={demoName === d} onClick={() => setDemoName(d)}>
+            <button key={d} disabled={demoName === d} onClick={() => setDemoName(d)}>
               {d}
             </button>
           ))}
