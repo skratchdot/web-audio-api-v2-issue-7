@@ -99,7 +99,7 @@ class PulseOscillator extends AudioWorkletProcessor {
         const detune = getDetune(i);
         const calculatedFreq = frequency * Math.pow(2, detune / 1200);
         // normalized frequency
-        const freq = calculatedFreq / sampleRate;
+        const freq = Math.abs(calculatedFreq / sampleRate);
 
         // the BLEP latency is 1 sample, so first
         // take the delayed part from previous sample
