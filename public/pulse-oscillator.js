@@ -4,6 +4,7 @@
 const DEFAULT_FREQUENCY = 440;
 const DEFAULT_DETUNE = 0;
 const DEFAULT_PULSE_WIDTH = 0.5;
+const TWOPI = Math.PI * 2;
 
 /**
  * helper function for getting param values
@@ -52,11 +53,11 @@ class PulseOscillator extends AudioWorkletProcessor {
 
   constructor() {
     super();
-    this.pos = 0;
-    this.minPhase = -1;
-    this.maxPhase = 1;
+    this.twoPiOverSr = TWOPI / sampleRate;
+    this.freq = 0;
+    this.phase = 0;
+    this.incr = 0;
   }
-
   process(inputs, outputs, parameters) {
     const output = outputs[0];
     const getFrequency = paramGetter(parameters.frequency);
@@ -65,16 +66,28 @@ class PulseOscillator extends AudioWorkletProcessor {
 
     output.forEach((channel) => {
       for (let i = 0; i < channel.length; i++) {
+        // get our current param values
         const frequency = getFrequency(i);
         const detune = getDetune(i);
         const pulseWidth = getPulseWidth(i);
+        // calculate frequency
         const freq = frequency * Math.pow(2, detune / 1200);
-        const r = this.pos % 1; // get remainder (a value between 0 and 1)
-        const phase = r < 0 ? 0 - r : r; // handle negative frequencies
-        // set output value
-        channel[i] = phase < pulseWidth ? this.minPhase : this.maxPhase;
-        // increase phase
-        this.pos += freq / sampleRate;
+
+        // channel[i] = Math.sin(this.phase); // sine
+        // channel[i] = this.phase / Math.PI; // sawtooth
+        channel[i] = this.phase <= TWOPI * pulseWidth - Math.PI ? 1 : -1; // square
+
+        // set new phase
+        if (this.freq !== freq) {
+          this.freq = freq;
+          this.incr = this.twoPiOverSr * freq;
+        }
+        this.phase += this.incr;
+        if (this.phase >= Math.PI) {
+          this.phase -= TWOPI;
+        } else if (this.phase < -Math.PI) {
+          this.phase += TWOPI;
+        }
       }
     });
 
