@@ -1,4 +1,8 @@
 /* globals currentFrame, currentTime, sampleRate, registerProcessor */
+/**
+ * Trying to port the polyblep code from:
+ * http://metafunction.co.uk/all-about-digital-oscillators-part-2-blits-bleps/
+ */
 
 // a few default values
 const DEFAULT_FREQUENCY = 440;
@@ -57,6 +61,29 @@ class PulseOscillator extends AudioWorkletProcessor {
     this.freq = 0;
     this.phase = 0;
     this.incr = 0;
+
+    /* http://metafunction.co.uk/all-about-digital-oscillators-part-2-blits-bleps/ */
+    this.poly_blep = (t) => {
+      const dt = this.incr / TWOPI;
+      // t-t^2/2 +1/2
+      // 0 < t <= 1
+      // discontinuities between 0 & 1
+      if (t < dt) {
+        t /= dt;
+        return t + t - t * t - 1.0;
+      }
+      // t^2/2 +t +1/2
+      // -1 <= t <= 0
+      // discontinuities between -1 & 0
+      else if (t > 1.0 - dt) {
+        t = (t - 1.0) / dt;
+        return t * t + t + t + 1.0;
+      }
+      // no discontinuities
+      // 0 otherwise
+      else return 0.0;
+    };
+    this.fmod = (a, b) => a % b;
   }
   process(inputs, outputs, parameters) {
     const output = outputs[0];
@@ -75,7 +102,13 @@ class PulseOscillator extends AudioWorkletProcessor {
 
         // channel[i] = Math.sin(this.phase); // sine
         // channel[i] = this.phase / Math.PI; // sawtooth
-        channel[i] = this.phase <= TWOPI * pulseWidth - Math.PI ? 1 : -1; // square
+        // channel[i] = this.phase <= TWOPI * pulseWidth - Math.PI ? 1 : -1; // square
+
+        let t = this.phase / TWOPI;
+        let value = this.phase <= TWOPI * pulseWidth - Math.PI ? 1 : -1; // square
+        //value += this.poly_blep(t); // Layer output of Poly BLEP on top (flip)
+        //value -= this.poly_blep(this.fmod(t + 0.5, 1.0)); // Layer output of Poly BLEP on top (flop)
+        channel[i] = value;
 
         // set new phase
         if (this.freq !== freq) {
