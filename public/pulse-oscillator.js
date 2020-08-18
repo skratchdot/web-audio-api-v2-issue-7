@@ -19,6 +19,19 @@ const adjustPhase = (phase) => {
   return phase;
 };
 
+// https://github.com/barzamin/polyblep/blob/master/src/lib.rs#L10-L24
+const blep = (t, dt) => {
+  if (t < dt) {
+    t = t / dt;
+    return 2 * t - Math.pow(t, 2) - 1;
+  } else if (t > (1 - dt)) {
+    t = (t - 1) / dt;
+    return Math.pow(t, 2) + 2 * t + 1;
+  } else {
+    return 0;
+  }
+};
+
 /**
  * helper function for getting audio param values. we either have 1 or 128
  * @param {*} param
@@ -69,6 +82,7 @@ class PulseOscillator extends AudioWorkletProcessor {
     this.freq = 0;
     this.phase = 0;
     this.incr = 0;
+    this.dt = 0;
   }
   process(inputs, outputs, parameters) {
     const output = outputs[0];
@@ -85,6 +99,18 @@ class PulseOscillator extends AudioWorkletProcessor {
         // calculate frequency
         const freq = frequency * Math.pow(2, detune / 1200);
 
+        // set new phase
+        if (this.freq !== freq) {
+          this.freq = freq;
+          this.incr = this.twoPiOverSr * freq;
+          this.dt = freq / sampleRate;
+        }
+
+
+
+
+
+
         // channel[i] = Math.sin(this.phase); // sine
         // channel[i] = this.phase / Math.PI; // sawtooth
         // channel[i] = this.phase <= TWOPI * pulseWidth - Math.PI ? 1 : -1; // square
@@ -93,13 +119,20 @@ class PulseOscillator extends AudioWorkletProcessor {
         const carrierPhase = adjustPhase(this.phase + TWOPI * pulseWidth);
         const sawtooth1 = this.phase / Math.PI;
         const sawtooth2 = carrierPhase / Math.PI;
-        channel[i] = sawtooth2 - sawtooth1;
+        const square = sawtooth2 - sawtooth1;
 
-        // set new phase
-        if (this.freq !== freq) {
-          this.freq = freq;
-          this.incr = this.twoPiOverSr * freq;
-        }
+
+        let t = this.phase / TWOPI;
+        const blepValue = square + blep(t, this.dt) - blep((t + 0.5) % 1, this.dt);
+        //self.naive_sample(self.wave) + blep(t, self.dt()) - blep((t + 0.5) % 1., self.dt())
+
+
+
+
+
+        channel[i] = blepValue;
+
+
         this.phase += this.incr;
         this.phase = adjustPhase(this.phase);
       }
