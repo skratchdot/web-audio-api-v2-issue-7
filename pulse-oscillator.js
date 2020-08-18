@@ -1,22 +1,31 @@
 /* globals currentFrame, currentTime, sampleRate, registerProcessor */
 
+/**
+ * Porting some of the polyblep code from:
+ * https://github.com/martinfinke/PolyBLEP/blob/master/PolyBLEP.cpp
+ * to javascript
+ */
+
 // a few default values
 const DEFAULT_FREQUENCY = 440;
 const DEFAULT_DETUNE = 0;
 const DEFAULT_PULSE_WIDTH = 0.5;
 const TWOPI = Math.PI * 2;
 
-/**
- * enforce: -TWOPI < phase < TWOPI
- * @param {*} phase 
- */
-const adjustPhase = (phase) => {
-  if (phase >= Math.PI) {
-    phase -= TWOPI;
-  } else if (phase < -Math.PI) {
-    phase += TWOPI;
+const bitwiseOrZero = (t) => t | 0;
+const square_number = (x) => x * x;
+// Adapted from "Phaseshaping Oscillator Algorithms for Musical Sound
+// Synthesis" by Jari Kleimola, Victor Lazzarini, Joseph Timoney, and Vesa
+// Valimaki.
+// http://www.acoustics.hut.fi/publications/papers/smc2010-phaseshaping/
+const blep = (t, dt) => {
+  if (t < dt) {
+    return -square_number(t / dt - 1);
+  } else if (t > 1 - dt) {
+    return square_number((t - 1) / dt + 1);
+  } else {
+    return 0;
   }
-  return phase;
 };
 
 /**
@@ -65,11 +74,45 @@ class PulseOscillator extends AudioWorkletProcessor {
 
   constructor() {
     super();
-    this.twoPiOverSr = TWOPI / sampleRate;
     this.freq = 0;
-    this.phase = 0;
-    this.incr = 0;
+    this.amplitude = 1;
+    this.t = 0;
   }
+  inc() {
+    this.t += this.freqInSecondsPerSample;
+    this.t -= bitwiseOrZero(this.t);
+  }
+  getFreqInHz() {
+    return this.freqInSecondsPerSample * sampleRate;
+  }
+  sin() {
+    return this.amplitude * Math.sin(TWOPI * this.t);
+  }
+  saw() {
+    let _t = this.t + 0.5;
+    _t -= bitwiseOrZero(_t);
+
+    let y = 2 * _t - 1;
+    y -= blep(_t, this.freqInSecondsPerSample);
+
+    return this.amplitude * y;
+  }
+  rect(pulseWidth) {
+    let t2 = this.t + 1 - pulseWidth;
+    t2 -= bitwiseOrZero(t2);
+
+    let y = -2 * pulseWidth;
+    if (this.t < pulseWidth) {
+      y += 2;
+    }
+
+    y +=
+      blep(this.t, this.freqInSecondsPerSample) -
+      blep(t2, this.freqInSecondsPerSample);
+
+    return this.amplitude * y;
+  }
+
   process(inputs, outputs, parameters) {
     const output = outputs[0];
     const getFrequency = paramGetter(parameters.frequency);
@@ -83,25 +126,18 @@ class PulseOscillator extends AudioWorkletProcessor {
         const detune = getDetune(i);
         const pulseWidth = getPulseWidth(i);
         // calculate frequency
-        const freq = frequency * Math.pow(2, detune / 1200);
-
-        // channel[i] = Math.sin(this.phase); // sine
-        // channel[i] = this.phase / Math.PI; // sawtooth
-        // channel[i] = this.phase <= TWOPI * pulseWidth - Math.PI ? 1 : -1; // square
-
-        // set carrier phase based on current phase and pulseWidth
-        const carrierPhase = adjustPhase(this.phase + TWOPI * pulseWidth);
-        const sawtooth1 = this.phase / Math.PI;
-        const sawtooth2 = carrierPhase / Math.PI;
-        channel[i] = sawtooth2 - sawtooth1;
+        const freq = Math.abs(frequency * Math.pow(2, detune / 1200));
 
         // set new phase
         if (this.freq !== freq) {
           this.freq = freq;
-          this.incr = this.twoPiOverSr * freq;
+          this.freqInSecondsPerSample = freq / sampleRate;
         }
-        this.phase += this.incr;
-        this.phase = adjustPhase(this.phase);
+        channel[i] =
+          this.getFreqInHz() >= sampleRate / 4
+            ? this.sin()
+            : this.rect(pulseWidth);
+        this.inc();
       }
     });
 
